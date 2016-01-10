@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/html">
+   <head>
+      <title>{{ title }}</title>
+   </head>
+   <body>
+        <div class="container" style="with:100%; display:block;">
+            {% for i, item in enumerate(items) %}
+                <div class="row" id="{{ i }}" style="width:100%; display:block; text-align:center; margin-bottom: 40px;">
+                    {% for key, value in item.items() %}
+                        <span class="{{ key }}">{{ ' '.join(key.split('_')).title() }}: {{ value }}</span><br />
+                    {% end %}
+                </div>
+            {% end %}
+        </div>
+   </body>
+ </html>
