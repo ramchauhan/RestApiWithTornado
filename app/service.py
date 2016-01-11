@@ -3,18 +3,18 @@ try:
     import simplejson as json
 except ImportError:
     import json
+import sqlite3
+import collections
 
 from tornado.ioloop import IOLoop
 import tornado.web
-
-import sqlite3
 
 DATABASE_NAME = "employee.db"
 
 
 class InitializeDatabase(object):
     """
-    Sqlite3 database initialization if not exist
+    Sqlite3 database creation if not exist
     """
     def __init__(self):
         self.db = sqlite3.connect(DATABASE_NAME)
@@ -63,6 +63,28 @@ class BaseHandler(tornado.web.RequestHandler):
             })
         return item_dict
 
+    def employee_obj(self, result):
+        """
+        make the employee object by using named tuple
+        This is example where we are using namedtuple
+        :param result:
+        :return:
+        """
+        employee_dict = []
+        for item in result:
+            employee = collections.namedtuple("Employee", "emp_id first_name last_name address city state zip")
+            employee.emp_id = item[0]
+            employee.first_name = item[1]
+            employee.last_name = item[2]
+            employee.address = item[3]
+            employee.city = item[4]
+            employee.state = item[5]
+            employee.zip = item[6]
+
+            employee_dict.append(employee)
+
+        return employee_dict
+
 
 class HomeHandler(BaseHandler):
     """
@@ -71,8 +93,8 @@ class HomeHandler(BaseHandler):
     def get(self):
         self.cursor.execute('SELECT * FROM employee')
         result = self.cursor.fetchall()
-        item_dict = self.dict_builder(result)
-        self.render("home.html", title="My title", items=item_dict)
+        employees = self.employee_obj(result)
+        self.render("home.html", title="My title", employees=employees)
         self.db.commit()
         self.db.close()
 
@@ -88,20 +110,28 @@ class EmployeeHandler(BaseHandler):
         :return:
         """
         try:
-            data_dict = json.loads(data)
-            self.data = data_dict
-            if not data_dict.get('first_name') and not data_dict.get('zip'):
+            self.data = json.loads(data)
+            if not self.data.get('first_name') and not self.data.get('zip'):
                 self.write("both, first_name and zip or mandatory fields")
-                raise
-            elif not data_dict.get('first_name'):
+                # setting bad request
+                self.set_status(400)
+                return
+            elif not self.data.get('first_name'):
                 self.write("first_name, is mandatory fields")
-                raise
-            elif not data_dict.get('zip'):
+                # setting bad request
+                self.set_status(400)
+                return
+            elif not self.data.get('zip'):
                 self.write("zip, is mandatory fields")
-                raise
+                # setting bad request
+                self.set_status(400)
+                return
         except json.decoder.JSONDecodeError:
-            self.write("bad, data")
-            raise
+            self.write("bad data, not able to decode")
+            # setting bad request
+            self.set_status(400)
+            return
+        return True
 
     def get(self, emp_id):
         """
@@ -135,7 +165,8 @@ class EmployeeHandler(BaseHandler):
         :return:
         """
         body_data = self.request.body
-        self.validate_data(body_data)
+        if not self.validate_data(body_data):
+            return
         self.cursor.execute('''INSERT INTO employee(first_name, last_name, address, city, state, zip)
                                 VALUES(?,?,?,?,?,?)''', (self.data['first_name'], self.data.get('last_name'),
                                                          self.data.get('address'), self.data.get('city'),
@@ -152,7 +183,8 @@ class EmployeeHandler(BaseHandler):
         :return:
         """
         body_data = self.request.body
-        self.validate_data(body_data)
+        if not self.validate_data(body_data):
+            return
         self.cursor.execute('''UPDATE employee set first_name=?, last_name=?, address=?, city=?, state=?, zip=?
                                     WHERE emp_id=?''', (self.data['first_name'], self.data.get('last_name'),
                                                         self.data.get('address'), self.data.get('city'),
@@ -168,10 +200,10 @@ class EmployeeHandler(BaseHandler):
         :param emp_id:
         :return:
         """
-        self.cursor.execute('''DELETE from employee where emp_id=?''', (int(emp_id)))
+        self.cursor.execute('''DELETE from employee where emp_id=?''', emp_id)
         self.db.commit()
         self.db.close()
-        self.set_status(201)
+        self.set_status(200)
         self.write("Data deleted successfully")
 
 

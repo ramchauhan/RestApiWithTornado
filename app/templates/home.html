@@ -4,11 +4,14 @@
    </head>
    <body>
         <div class="container" style="with:100%; display:block;">
-            {% for i, item in enumerate(items) %}
-                <div class="row" id="{{ i }}" style="width:100%; display:block; text-align:center; margin-bottom: 40px;">
-                    {% for key, value in item.items() %}
-                        <span class="{{ key }}">{{ ' '.join(key.split('_')).title() }}: {{ value }}</span><br />
-                    {% end %}
+            {% for employee in employees %}
+                <div class="row" id="{{ employee.emp_id }}" style="width:100%; display:block; text-align:center; margin-bottom: 40px;">
+                    <span class="employee">First Name:   {{ employee.first_name }}</span> <br />
+                    <span class="employee">Last Name: {{ employee.last_name }}</span><br />
+                    <span class="employee">Address:  {{ employee.address }}</span><br />
+                    <span class="employee">City:  {{ employee.city }}</span><br />
+                    <span class="employee">State:  {{ employee.state }}</span><br />
+                    <span class="employee">Pin Code:  {{ employee.zip }}</span><br />
                 </div>
             {% end %}
         </div>
