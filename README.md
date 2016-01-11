@@ -12,7 +12,7 @@ Step2 : pip install -r requirement.txt
 step4 : python app/service.py 
 
 
-#Note: This will Application will generate emp_id dynamically, Here first_name and zip are mandatory fields
+#Note: This Application will generate emp_id dynamically, Here first_name and zip are mandatory fields
 
 You can insert the data by using rest service or by using form
 
@@ -25,7 +25,7 @@ Now you can perform below task
 
 2: You can perform CRUD opration by using any rest client like postman or by using "curl"
 
-FOR GET: 
+#FOR GET: 
 
 URL: http://localhost:9000/api/<emp_id>
 
@@ -43,7 +43,7 @@ Sample out put:
     }
 ]
 
-FOR POST:
+#FOR POST:
 
 URL: http://localhost:9000/api/
 
@@ -52,7 +52,7 @@ Sample raw data
 {"city": "Azamgarh", "first_name": "Ashok", "last_name": "Chauhan", "zip": 123456, "state": "Uttar Pradesh", "address": "xyz"}
 
 
-FOR PUT:
+#FOR PUT:
 
 URL: http://localhost:9000/api/
 
@@ -61,6 +61,6 @@ Sample raw data
 {"city": "Azamgarh", "first_name": "Ashok", "last_name": "Chauhan", "zip": 123456, "state": "Uttar Pradesh", "address": "xyz"}
 
 
-FOR DELETE:
+#FOR DELETE:
 
 URL: http://localhost:9000/api/<emp_id>
