@@ -1,3 +1,4 @@
+import logging
 import os
 try:
     import simplejson as json
@@ -30,6 +31,7 @@ class InitializeDatabase(object):
                 city text,\
                 state text,\
                 zip INTEGER NOT NULL)')
+            logging.info("database crated successfully")
         self.db.commit()
         self.db.close()
 
@@ -115,21 +117,25 @@ class EmployeeHandler(BaseHandler):
                 self.write("both, first_name and zip or mandatory fields")
                 # setting bad request
                 self.set_status(400)
+                logging.error("json is not having proper keys")
                 return
             elif not self.data.get('first_name'):
                 self.write("first_name, is mandatory fields")
                 # setting bad request
                 self.set_status(400)
+                logging.error("json is not having proper keys")
                 return
             elif not self.data.get('zip'):
                 self.write("zip, is mandatory fields")
                 # setting bad request
                 self.set_status(400)
+                logging.error("json is not having proper keys")
                 return
         except json.decoder.JSONDecodeError:
             self.write("bad data, not able to decode")
             # setting bad request
             self.set_status(400)
+            logging.error("json is not proper")
             return
         return True
 
@@ -171,6 +177,7 @@ class EmployeeHandler(BaseHandler):
                                 VALUES(?,?,?,?,?,?)''', (self.data['first_name'], self.data.get('last_name'),
                                                          self.data.get('address'), self.data.get('city'),
                                                          self.data.get('state'), self.data['zip']))
+        logging.info("New entry created successfully with first_name ad {}".format(self.data['first_name']))
         self.db.commit()
         self.db.close()
         self.set_status(201)
@@ -189,6 +196,7 @@ class EmployeeHandler(BaseHandler):
                                     WHERE emp_id=?''', (self.data['first_name'], self.data.get('last_name'),
                                                         self.data.get('address'), self.data.get('city'),
                                                         self.data.get('state'), self.data['zip'], int(emp_id)))
+        logging.info("employee information is updated successfully with emp_id {}".format(int(emp_id)))
         self.db.commit()
         self.db.close()
         self.set_status(201)
@@ -201,6 +209,7 @@ class EmployeeHandler(BaseHandler):
         :return:
         """
         self.cursor.execute('''DELETE from employee where emp_id=?''', emp_id)
+        logging.info("employee row deleted successfully with id {}".format(int(emp_id)))
         self.db.commit()
         self.db.close()
         self.set_status(200)
