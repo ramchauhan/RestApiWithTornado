@@ -52,10 +52,11 @@ class BaseHandler(tornado.web.RequestHandler):
         :param result:
         :return:
         """
+        import pdb; pdb.set_trace()
         item_dict = []
         for item in result:
             item_dict.append({
-                "id": item[0],
+                "emp_id": item[0],
                 "first_name": item[1],
                 "last_name": item[2],
                 "address": item[3],
