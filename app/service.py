@@ -52,7 +52,6 @@ class BaseHandler(tornado.web.RequestHandler):
         :param result:
         :return:
         """
-        import pdb; pdb.set_trace()
         item_dict = []
         for item in result:
             item_dict.append({
@@ -174,10 +173,10 @@ class EmployeeHandler(BaseHandler):
         body_data = self.request.body
         if not self.validate_data(body_data):
             return
-        self.cursor.execute('''INSERT INTO employee(first_name, last_name, address, city, state, zip)
-                                VALUES(?,?,?,?,?,?)''', (self.data['first_name'], self.data.get('last_name'),
-                                                         self.data.get('address'), self.data.get('city'),
-                                                         self.data.get('state'), self.data['zip']))
+        self.cursor.execute("INSERT INTO employee(first_name, last_name, address, city, state, zip)"
+                            " VALUES(?,?,?,?,?,?)", (self.data['first_name'], self.data.get('last_name'),
+                                                     self.data.get('address'), self.data.get('city'),
+                                                     self.data.get('state'), self.data['zip']))
         logging.info("New entry created successfully with first_name ad {}".format(self.data['first_name']))
         self.db.commit()
         self.db.close()
@@ -193,10 +192,10 @@ class EmployeeHandler(BaseHandler):
         body_data = self.request.body
         if not self.validate_data(body_data):
             return
-        self.cursor.execute('''UPDATE employee set first_name=?, last_name=?, address=?, city=?, state=?, zip=?
-                                    WHERE emp_id=?''', (self.data['first_name'], self.data.get('last_name'),
-                                                        self.data.get('address'), self.data.get('city'),
-                                                        self.data.get('state'), self.data['zip'], int(emp_id)))
+        self.cursor.execute("UPDATE employee set first_name=?, last_name=?, address=?, city=?, state=?, zip=? "
+                            " WHERE emp_id=?", (self.data['first_name'], self.data.get('last_name'),
+                                                self.data.get('address'), self.data.get('city'),
+                                                self.data.get('state'), self.data['zip'], int(emp_id)))
         logging.info("employee information is updated successfully with emp_id {}".format(int(emp_id)))
         self.db.commit()
         self.db.close()
